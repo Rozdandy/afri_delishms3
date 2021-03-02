@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afriq Delish</title>
+</head>
+<body>
+    {% for recipe in recipes %}
+        {{ recipe.recipe_name }}<br>
+        {{ recipe.image }}<br>
+        {{ recipe.date_posted }}<br>
+        {{ recipe.ingredients }}<br>
+        {{ recipe.cook_duration }}<br>
+        {{ recipe.simple_description }}<br>
+        {{ recipe.cook_direction }}<br>
+        {{ recipe.adult_plates }}<br>
+        {{ recipe.video }}<br>
+        {{ recipe.vegan }}<br>
+        {{ recipe.author }}<br>
+    {% endfor %}
+</body>
+</html>
