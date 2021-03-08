@@ -21,7 +21,8 @@ mongo = PyMongo(app)
 @app.route("/")
 @app.route("/get_recipes")
 def get_recipes():
-    recipes = mongo.db.recipes.find()
+    recipes = list(mongo.db.recipes.find())
+    print(recipes)
     return render_template("recipes.html", recipes=recipes)
 
 
@@ -99,22 +100,77 @@ def logout():
     return redirect(url_for("login"))
 
 
-@app.route("/contact", methods=["GET", "POST"])
-def contact():
-    return render_template("contact.html")
+@app.route("/add_recipe", methods=["GET", "POST"])
+def add_recipe():
+    if request.method == "POST":
+        vegan = "on" if request.form.get("vegan") else "off"
+        recipe = {
+            "category_name": request.form.get("category_name"),
+            "recipe_name": request.form.get("recipe_name"),
+            "img_url": request.form.get("img_url"),
+            "simple_description": request.form.get("simple_description"),
+            "vegan": vegan,
+            "prep_duration": request.form.get("prep_duration"),
+            "cook_duration": request.form.get("cook_duration"),
+            "cuisine": request.form.get("cusine"),
+            "date_posted": request.form.get("date_posted"),
+            "ingredients": request.form.get("ingredients"),
+            "adult_plates": request.form.get("adult_plates"),
+            "cook_direction": request.form.get("cook_direction"),
+            "due_date": request.form.get("due_date"),
+            "author": session["user"],
+        }
+        mongo.db.recipes.insert_one(recipe)
+        flash("Recipe Successfully Added")
+        return redirect(url_for("get_recipes"))
+
+    categories = mongo.db.categories.find().sort("category_name", 1)
+    return render_template("add_recipe.html", categories=categories)
+
+
+@app.route("/edit_recipe/<recipe_id>", methods=["GET", "POST"])
+def edit_recipe(recipe_id):
+    if request.method == "POST":
+        vegan = "on" if request.form.get("vegan") else "off"
+        edits = {
+            "category_name": request.form.get("category_name"),
+            "recipe_name": request.form.get("recipe_name"),
+            "img_url": request.form.get("img_url"),
+            "simple_description": request.form.get("simple_description"),
+            "vegan": vegan,
+            "prep_duration": request.form.get("prep_duration"),
+            "cook_duration": request.form.get("cook_duration"),
+            "cuisine": request.form.get("cusine"),
+            "date_posted": request.form.get("date_posted"),
+            "ingredients": request.form.get("ingredients"),
+            "adult_plates": request.form.get("adult_plates"),
+            "cook_direction": request.form.get("cook_direction"),
+            "due_date": request.form.get("due_date"),
+            "author": session["user"],
+        }
+        mongo.db.recipes.update({"_id": ObjectId(recipe_id)}, edits)
+        flash("Recipe Successfully Updated")
+        return redirect(url_for("get_recipes"))
+
+    recipe = mongo.db.recipes.find_one({"_id": ObjectId(recipe_id)})
+    categories = mongo.db.categories.find().sort("category_name", 1)
+    return render_template(
+        "edit_recipe.html", recipe=recipe, categories=categories)
+
+
+@app.route("/delete_recipe/<recipe_id>")
+def delete_recipe(recipe_id):
+    mongo.db.recipes.remove({"_id": ObjectId(recipe_id)})
+    flash("Recipe Successfully Deleted")
+    return redirect(url_for("get_recipes"))
+
+
+# @app.route("/contact", methods=["GET", "POST"])
+# def contact():
+#     return render_template("contact.html") 
 
 
 if __name__ == "__main__":
     app.run(host=os.environ.get("IP"),
             port=int(os.environ.get("PORT")),
             debug=True)
-
-
-
-
-            
-
-
-
-
-

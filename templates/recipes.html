@@ -1,19 +1,120 @@
 {% extends "base.html" %}
 {% block content %}
-    <h2>An extension of base templates</h2>
-    
+
+
+<div class="container-fluid">
+    <div class="slider">
+        <ul class="slides">
+            <li>
+                <img src="{{ url_for('static', filename='images/angolanfeij.jpg') }}">
+                <div class="caption center-align">
+                    <h3>Angolan Feijoada</h3>
+                    <h5 class="light grey-text text-lighten-3">Angolan national favorite dish; Very rich, savory, &amp;
+                        satisfying</h5>
+                </div>
+            </li>
+            <li>
+                <img src="{{ url_for('static', filename='images/jollofrice.jpg') }}">
+                <div class="caption left-align">
+                    <h3>Nigerian Jollof Rice</h3>
+                    <h5 class="light grey-text text-lighten-3">Without controversy; Nigerian Jollof Rice, simply the
+                        best
+                    </h5>
+                </div>
+            </li>
+            <li>
+                <img src="{{ url_for('static', filename='images/ghanabanku.jpg') }}">
+                <div class="caption right-align">
+                    <h3>Ghanaian Banku</h3>
+                    <h5 class="light grey-text text-lighten-3">Banku and Tilapia; food for the champions</h5>
+                </div>
+            </li>
+            <li>
+                <img src="{{ url_for('static', filename='images/zambianshima.jpg') }}">
+                <div class="caption center-align">
+                    <h3>Zambian Nshima</h3>
+                    <h5 class="light grey-text text-lighten-3">Zambian real meal: Nshima and ndiwo</h5>
+                </div>
+            </li>
+        </ul>
+
+    </div>
+</div>
+
+
+<div class="container">
+
     {% for recipe in recipes %}
-        {{ recipe.recipe_name }}<br>
-        {{ recipe.image }}<br>
-        {{ recipe.date_posted }}<br>
-        {{ recipe.ingredients }}<br>
-        {{ recipe.cook_duration }}<br>
-        {{ recipe.simple_description }}<br>
-        {{ recipe.cook_direction }}<br>
-        {{ recipe.adult_plates }}<br>
-        {{ recipe.video }}<br>
-        {{ recipe.vegan }}<br>
-        {{ recipe.author }}<br>
-    {% endfor %}
+    <div class="row">
+        <h3 class="center-align">{{ recipe.recipe_name }}</h3>
+        <hr class="blackline">
+    </div>
+
+    <div class="container">
+        <!-- Image and info -->
+        <div class="row">
+            <div class="col s4">
+                <h6>Persons: {{ recipe.adult_plates }}</h6>
+                <h6>Prep time: {{ recipe.prep_duration }}</h6>
+                <br>
+                <h6>Category: {{ recipe.category_name }}</h6>
+                <h6><em>Posted by: {{recipe.author}}</em></h6>
+                <h6>{{ recipe.cuisine }}</h6>
+            </div>
+            <div class="col s8">
+                <img class="img_recipe" src="{{ recipe.img_url }}" alt="recipe_image">
+            </div>
+        </div>
+        <!-- Ingredients and instructions -->
+        <div class="row">
+            <div class="col s4 custom-col">
+                <h4>Ingredients</h4>
+                <ul>
+                    {% for list in recipe.ingredients.splitlines() %}
+                    <li>
+                        <p><i class="fas fa-circle"></i> {{ list }}</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col s8">
+                <h4>Directions</h4>
+                <ul>
+                    {% for steps in recipe.cook_direction %}
+                    <li>
+                        <p>{{ steps }}</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <!-- Tips -->
+        {% if recipe.simple_description %}
+        <div class="row">
+            <div class="col s12">
+                <h5>Meal Description</h5>
+                <p>{{ recipe.simple_description }}</p>
+            </div>
+        </div>
+        {% else %}
+        {% endif %}
+
+        <div class="col s3">
+           
+                    <i class="fas fa-caret-down"></i>
+                     {% if session.user|lower == recipe.author|lower %}
+                        <a href="{{ url_for('delete_recipe', recipe_id=recipe._id) }}" class="btn-small green accent-4">Delete</a>
+                        <a href="{{ url_for('edit_recipe', recipe_id=recipe._id) }}" class="btn-small light-blue lighten-1">
+                            Edit
+
+                        </a>
+                    {% endif %}
+             </div>
+    </div>
+
+    {% endfor%}
+
+
+    
 
  {% endblock %}    
